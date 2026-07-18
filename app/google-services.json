@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "432488523184",
+    "project_id": "accessibilityservice",
+    "storage_bucket": "accessibilityservice.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432488523184:android:992ca73a1d847e3b3e2275",
+        "android_client_info": {
+          "package_name": "com.talla.accessibilityservice"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDR4bBO1c52XtPnAXjhuXv-wQT1NtZUnVs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

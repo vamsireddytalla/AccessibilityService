@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AccessibilityService</string>
+    <string name="accessibility_service_purpose">This service is used as Digital Wellbeing for track data in background for apps usage time.</string>
+</resources>
