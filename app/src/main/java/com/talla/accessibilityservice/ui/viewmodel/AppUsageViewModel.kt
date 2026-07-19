@@ -15,14 +15,21 @@ import java.util.Locale
 
 class AppUsageViewModel(application: Application) : AndroidViewModel(application = application) {
     private val appUsageRepository = AppUsageRepository(application)
-    private val _isPermissionGranted = MutableLiveData<Boolean>()
-    val isPermissionGranted = _isPermissionGranted
+    private val _isAccessibilityEnabled = MutableLiveData<Boolean>()
+    val isAccessibilityEnabled = _isAccessibilityEnabled
+
+    private val _isUsageStatsPermissionGranted = MutableLiveData<Boolean>()
+    val isUsageStatsEnabled = _isUsageStatsPermissionGranted
 
     val isServiceRunning: LiveData<Boolean> = AppTrackerServices.isServiceRunning
     val todayEvents = appUsageRepository.getTodayAppUsageEvents().asLiveData()
 
-    fun setPermissionGranted(granted: Boolean) {
-        _isPermissionGranted.value = granted
+    fun setAccessibilityEnabled(enabled: Boolean){
+        _isAccessibilityEnabled.value = enabled
+    }
+
+    fun setUsageStatsPermissionGranted(granted: Boolean){
+        _isUsageStatsPermissionGranted.value = granted
     }
 
     val appUsageSummary = appUsageRepository.getTodayAppUsageEvents().map { events ->

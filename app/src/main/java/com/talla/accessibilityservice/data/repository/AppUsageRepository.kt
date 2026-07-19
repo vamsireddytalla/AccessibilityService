@@ -1,5 +1,6 @@
 package com.talla.accessibilityservice.data.repository
 
+import android.app.usage.UsageStatsManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
@@ -76,6 +77,29 @@ class AppUsageRepository(private val context: Context) {
         usageEventsRef.orderByChild("startTimeMillis").startAt(startOfDay.toDouble())
             .addValueEventListener(listener)
         awaitClose { usageEventsRef.removeEventListener(listener) }
+    }
+
+    fun getAppsUsageForToday(context: Context): List<Pair<String, Long>> {
+        val usageStatsManager =
+            context.getSystemService(Context.USAGE_STATS_SERVICE) as UsageStatsManager
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+
+        val startTime = calendar.timeInMillis
+        val endTime = System.currentTimeMillis()
+
+        //Query system for all app usage between midnight and now
+        val stats = usageStatsManager.queryUsageStats(
+            UsageStatsManager.INTERVAL_DAILY,
+            startTime,
+            endTime
+        )
+        // returns data which apps are used today with total time greater than zero
+        return stats.map {
+            it.packageName to it.totalTimeInForeground // Returns packageName and total milliseconds
+        }.filter { it.second > 0 }
     }
 
 }

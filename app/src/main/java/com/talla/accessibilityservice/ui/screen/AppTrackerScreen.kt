@@ -47,7 +47,8 @@ import com.talla.accessibilityservice.ui.viewmodel.AppUsageViewModel
 @Composable
 fun AppTrackerScreen(viewModel: AppUsageViewModel) {
     val context = LocalContext.current
-    val isPermissionGranted by viewModel.isPermissionGranted.observeAsState(initial = false)
+    val isAccessibilityEnabled by viewModel.isAccessibilityEnabled.observeAsState(initial = false)
+    val isUsageStatsEnabled by viewModel.isUsageStatsEnabled.observeAsState(initial = false)
     val isServiceRunning by viewModel.isServiceRunning.observeAsState(initial = false)
     val appUsageSummary by viewModel.appUsageSummary.observeAsState(initial = emptyList())
 
@@ -58,7 +59,7 @@ fun AppTrackerScreen(viewModel: AppUsageViewModel) {
             )
         }
     ) { paddingsValues ->
-        if (!isPermissionGranted) {
+        if (!isAccessibilityEnabled) {
             AccessibilityPermissionRequest(
                 onRequestPermissions = {
                     context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
@@ -69,6 +70,21 @@ fun AppTrackerScreen(viewModel: AppUsageViewModel) {
                     ).show()
                 },
                 modifier = Modifier.padding(paddingsValues)
+            )
+        } else if (!isUsageStatsEnabled) {
+            AccessibilityPermissionRequest(
+                onRequestPermissions = {
+                    context.startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+                    Toast.makeText(
+                        context,
+                        "Enable AppTrackerService, then return to app",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                },
+                modifier = Modifier.padding(paddingsValues),
+                title = "This app requires Usage Stats permission to track app usage",
+                description = "Please accept the Usage Stats permission to continue",
+                buttonTex = "Open Usage Stats Settings"
             )
         } else {
             AppUsageTabs(
@@ -84,7 +100,10 @@ fun AppTrackerScreen(viewModel: AppUsageViewModel) {
 @Composable
 fun AccessibilityPermissionRequest(
     onRequestPermissions: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    title: String = "This app requires accessibility Service permission to track app usage",
+    description: String = "Please accept the Accessibility permission to continue",
+    buttonTex: String = "Open Accessibility Settings"
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -98,19 +117,19 @@ fun AccessibilityPermissionRequest(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "This app requires accessibility Service permission to track app usage",
+            text = title,
             modifier = Modifier.padding(horizontal = 32.dp),
             style = MaterialTheme.typography.bodyMedium
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Please accept the Accessibility permission to continue",
+            text = description,
             modifier = Modifier.padding(horizontal = 32.dp),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onRequestPermissions) {
-            Text("Open Accessibility Settings")
+            Text(buttonTex)
         }
     }
 }
@@ -256,12 +275,12 @@ fun AppEventItem(event: AppUsageInfo, viewModel: AppUsageViewModel) {
                 text = "Started at: ${viewModel.formatDateTime(event.startTimeMillis)}",
                 style = MaterialTheme.typography.labelMedium
             )
-            if(event.durationMillis > 0){
+            if (event.durationMillis > 0) {
                 Text(
                     text = "Duration: ${viewModel.formatDuration(event.durationMillis)}",
                     style = MaterialTheme.typography.labelMedium
                 )
-            }else{
+            } else {
                 Text(text = "Brief usage event")
             }
         }
